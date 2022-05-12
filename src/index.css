@@ -213,7 +213,7 @@ button {
 
 .forgotPasswordLink {
   cursor: pointer;
-  color: #00cc66;
+  color: red;
   font-weight: 600;
   text-align: right;
 }
