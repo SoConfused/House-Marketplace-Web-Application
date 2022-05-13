@@ -1,5 +1,8 @@
 import {useState} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
+import {getAuth, createUserWithEmailAndPassword, updateProfile} from 'firebase/auth'
+import { db } from '../firebase.config'
+import {setDoc, doc, serverTimestamp} from 'firebase/firestore'
 import {ReactComponent as ArrowRightIcon} from '../assets/svg/keyboardArrowRightIcon.svg'
 import visibilityIcon from '../assets/svg/visibilityIcon.svg'
 
@@ -24,6 +27,33 @@ function SignUp() {
 
   const navigate = useNavigate()
 
+  const onSubmit = async (e) => {
+    e.preventDefault()
+
+
+    try {
+      const auth = getAuth()
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      const user = userCredential.user
+      
+      updateProfile(auth.currentUser, {displayName: name})
+
+      const formDataCopy = {...formData} // copying everything in the formData state, which is the name, email password
+      delete formDataCopy.password // deleting password from database for security purposes
+      formDataCopy.timestamp = serverTimestamp() // sets timestamp of user data
+
+      await setDoc(doc(db, 'users', user.uid), formDataCopy) // updates the database and users to the 'users' collection
+
+
+      navigate('/')
+
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+
+
   return (
     <>
      <div className="PageContainer">
@@ -31,7 +61,7 @@ function SignUp() {
         <p className="pageHeader">Welcome Back!</p>
       </header>
 
-      <form>
+      <form onSubmit={onSubmit}>
       <input 
         type="text" 
         className="nameInput" 
@@ -85,6 +115,6 @@ function SignUp() {
      </div>
     </>
   )
-  }
+}
   
   export default SignUp
