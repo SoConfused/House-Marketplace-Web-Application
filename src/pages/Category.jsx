@@ -55,10 +55,10 @@ function Category() {
     // Pagination / Load More
     const onFetchMoreListings = async () => {
       try {
-        // Get reference
+        // Gets the reference from 'listings' collection
         const listingsRef = collection(db, 'listings')
   
-        // Create a query
+        // Creates a query based on timestamp
         const q = query(
           listingsRef,
           where('type', '==', params.categoryName),
@@ -67,7 +67,6 @@ function Category() {
           limit(10)
         )
   
-        // Execute query
         const querySnap = await getDocs(q)
   
         const lastVisible = querySnap.docs[querySnap.docs.length - 1]
